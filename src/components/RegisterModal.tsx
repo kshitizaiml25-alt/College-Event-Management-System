@@ -2,9 +2,20 @@
 "use client";
 
 import { useState } from "react";
-import { X, CheckCircle, ExternalLink } from "lucide-react";
+import { X, CheckCircle, ExternalLink, Copy, Check } from "lucide-react";
+import { addRegistration, isAlreadyRegistered } from "@/lib/registrations";
+import { useToast } from "@/context/ToastContext";
 
-interface Props { eventTitle: string; eventDate: string; formUrl: string; onClose: () => void; }
+interface Props {
+  eventId: string;
+  eventTitle: string;
+  eventDate: string;
+  eventVenue: string;
+  eventCategory: string;
+  formUrl: string;
+  onClose: () => void;
+}
+
 interface RegForm { name: string; email: string; phone: string; year: string; college: string; }
 interface RegErrors { name?: string; email?: string; phone?: string; year?: string; college?: string; }
 
@@ -12,21 +23,23 @@ function isRealFormUrl(url: string): boolean {
   return url.startsWith("https://forms.gle/") && !url.includes("your-") && url.length > 25;
 }
 
-export default function RegisterModal({ eventTitle, eventDate, formUrl, onClose }: Props) {
+export default function RegisterModal({ eventId, eventTitle, eventDate, eventVenue, eventCategory, formUrl, onClose }: Props) {
+  const { showToast } = useToast();
   const [form, setForm] = useState<RegForm>({ name: "", email: "", phone: "", year: "", college: "" });
   const [errors, setErrors] = useState<RegErrors>({});
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const [confirmationId, setConfirmationId] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
   const hasGoogleForm = isRealFormUrl(formUrl);
 
   function validate(): RegErrors {
     const e: RegErrors = {};
-    if (!form.name.trim()) e.name = "Full name is required.";
+    if (!form.name.trim())  e.name  = "Full name is required.";
     if (!form.email.trim()) { e.email = "Email is required."; }
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) { e.email = "Enter a valid email."; }
     if (!form.phone.trim()) { e.phone = "Phone number is required."; }
-    else if (!/^[6-9]\d{9}$/.test(form.phone.replace(/\s/g, ""))) { e.phone = "Enter a valid 10-digit mobile number."; }
-    if (!form.year) e.year = "Select your year of study.";
+    else if (!/^[6-9]\d{9}$/.test(form.phone.replace(/\s/g, ""))) { e.phone = "Enter a valid 10-digit number."; }
+    if (!form.year)        e.year    = "Select your year of study.";
     if (!form.college.trim()) e.college = "College name is required.";
     return e;
   }
@@ -35,11 +48,34 @@ export default function RegisterModal({ eventTitle, eventDate, formUrl, onClose 
     e.preventDefault();
     const errs = validate();
     if (Object.keys(errs).length > 0) { setErrors(errs); return; }
+
+    // Check duplicate registration
+    if (isAlreadyRegistered(eventId, form.email)) {
+      showToast("You have already registered for this event.", "warning");
+      setErrors({ email: "This email is already registered for this event." });
+      return;
+    }
+
     setErrors({});
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 1400));
+    await new Promise((r) => setTimeout(r, 1200));
+
+    const reg = addRegistration({
+      eventId, eventTitle, eventDate, eventVenue, eventCategory,
+      name: form.name, email: form.email, phone: form.phone,
+      college: form.college, year: form.year,
+    });
+
     setLoading(false);
-    setSuccess(true);
+    setConfirmationId(reg.confirmationId);
+    showToast(`Registered for ${eventTitle}! 🎉`, "success");
+  }
+
+  function copyId() {
+    if (!confirmationId) return;
+    navigator.clipboard.writeText(confirmationId);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   }
 
   function field(key: keyof RegForm, value: string) {
@@ -54,31 +90,46 @@ export default function RegisterModal({ eventTitle, eventDate, formUrl, onClose 
         {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "24px" }}>
           <div>
-            <h2 style={{ fontSize: "20px", fontWeight: 800, marginBottom: "4px", color: "#111827" }}>Event Registration</h2>
+            <h2 style={{ fontSize: "19px", fontWeight: 800, marginBottom: "4px", color: "#111827" }}>Event Registration</h2>
             <p style={{ fontSize: "13px", color: "#7c3aed", fontWeight: 600 }}>{eventTitle}</p>
-            <p style={{ fontSize: "12px", color: "#9ca3af", marginTop: "2px" }}>📅 {eventDate}</p>
+            <p style={{ fontSize: "12px", color: "#9ca3af", marginTop: "2px" }}>📅 {eventDate} · 📍 {eventVenue}</p>
           </div>
-          <button onClick={onClose} style={{ background: "#f3f4f6", border: "none", borderRadius: "8px", padding: "8px", cursor: "pointer", color: "#6b7280", display: "flex" }}>
+          <button onClick={onClose} style={{ background: "#f3f4f6", border: "none", borderRadius: "8px", padding: "8px", cursor: "pointer", color: "#6b7280", display: "flex", flexShrink: 0 }}>
             <X size={18} />
           </button>
         </div>
 
-        {success ? (
-          <div style={{ textAlign: "center", padding: "24px 0" }}>
+        {confirmationId ? (
+          /* ── Success ── */
+          <div style={{ textAlign: "center", padding: "16px 0" }}>
             <CheckCircle size={56} style={{ color: "#16a34a", margin: "0 auto 16px" }} />
-            <h3 style={{ fontSize: "20px", fontWeight: 800, marginBottom: "8px", color: "#111827" }}>Registered Successfully! 🎉</h3>
+            <h3 style={{ fontSize: "20px", fontWeight: 800, marginBottom: "8px", color: "#111827" }}>You&apos;re Registered! 🎉</h3>
             <p className="muted" style={{ marginBottom: "24px", fontSize: "14px" }}>
-              You&apos;re in! Confirmation will be sent to <strong style={{ color: "#111827" }}>{form.email}</strong>
+              Confirmation sent to <strong style={{ color: "#111827" }}>{form.email}</strong>
             </p>
+
+            {/* Confirmation ID box */}
+            <div style={{ background: "#f9fafb", border: "1px solid #e5e7eb", borderRadius: "12px", padding: "16px 20px", marginBottom: "20px" }}>
+              <p style={{ fontSize: "12px", color: "#9ca3af", marginBottom: "6px" }}>Your Confirmation ID</p>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}>
+                <span style={{ fontSize: "20px", fontWeight: 800, color: "#7c3aed", letterSpacing: "0.05em" }}>{confirmationId}</span>
+                <button onClick={copyId} style={{ background: "none", border: "none", cursor: "pointer", color: "#9ca3af", display: "flex" }}>
+                  {copied ? <Check size={16} style={{ color: "#16a34a" }} /> : <Copy size={16} />}
+                </button>
+              </div>
+              <p style={{ fontSize: "11px", color: "#9ca3af", marginTop: "6px" }}>Save this ID — it&apos;s your proof of registration</p>
+            </div>
+
             {hasGoogleForm && (
               <a href={formUrl} target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontSize: "13px", color: "#7c3aed", marginBottom: "16px" }}>
-                Also fill the Google Form <ExternalLink size={13} />
+                Also fill the official Google Form <ExternalLink size={12} />
               </a>
             )}
             <br />
-            <button onClick={onClose} className="primary-btn" style={{ marginTop: "12px" }}>Close</button>
+            <button onClick={onClose} className="primary-btn" style={{ marginTop: "12px" }}>Done</button>
           </div>
         ) : (
+          /* ── Form ── */
           <form onSubmit={handleSubmit} noValidate style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
             <div>
               <label style={ls}>Full Name</label>
@@ -117,8 +168,7 @@ export default function RegisterModal({ eventTitle, eventDate, formUrl, onClose 
 
             {hasGoogleForm && (
               <p style={{ fontSize: "12px", color: "#9ca3af" }}>
-                You can also{" "}
-                <a href={formUrl} target="_blank" rel="noopener noreferrer" style={{ color: "#7c3aed" }}>register via Google Form ↗</a>
+                You can also <a href={formUrl} target="_blank" rel="noopener noreferrer" style={{ color: "#7c3aed" }}>register via Google Form ↗</a>
               </p>
             )}
 

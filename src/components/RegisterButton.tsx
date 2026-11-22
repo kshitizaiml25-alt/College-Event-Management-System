@@ -4,31 +4,39 @@
 import { useState } from "react";
 import RegisterModal from "@/components/RegisterModal";
 import { ExternalLink } from "lucide-react";
+import type { Event } from "@/data/events";
 
 interface Props {
-  eventTitle: string;
-  eventDate: string;
-  formUrl: string;
+  event: Pick<Event, "id" | "title" | "date" | "venue" | "category" | "formUrl" | "seats" | "registered">;
 }
 
-export default function RegisterButton({ eventTitle, eventDate, formUrl }: Props) {
+export default function RegisterButton({ event }: Props) {
   const [showModal, setShowModal] = useState(false);
+  const isFull = event.registered >= event.seats;
 
   return (
     <>
       <button
-        onClick={() => setShowModal(true)}
+        onClick={() => !isFull && setShowModal(true)}
         className="primary-btn"
-        style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}
+        disabled={isFull}
+        style={{
+          display: "inline-flex", alignItems: "center", gap: "8px",
+          opacity: isFull ? 0.6 : 1,
+          cursor: isFull ? "not-allowed" : "pointer",
+        }}
       >
-        Register for Event <ExternalLink size={15} />
+        {isFull ? "Registration Full" : <><ExternalLink size={15} /> Register for Event</>}
       </button>
 
       {showModal && (
         <RegisterModal
-          eventTitle={eventTitle}
-          eventDate={eventDate}
-          formUrl={formUrl}
+          eventId={event.id}
+          eventTitle={event.title}
+          eventDate={event.date}
+          eventVenue={event.venue}
+          eventCategory={event.category}
+          formUrl={event.formUrl}
           onClose={() => setShowModal(false)}
         />
       )}
