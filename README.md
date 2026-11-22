@@ -1,3 +1,5 @@
+#College Event Management
+
 CampusHub — Production Audit
 🔴 CRITICAL (Breaks core functionality)
 #	Issue	Impact
