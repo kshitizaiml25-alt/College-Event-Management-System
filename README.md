@@ -1,4 +1,4 @@
-#College Event Management
+#  College Event Management
 
 CampusHub — Production Audit
 🔴 CRITICAL (Breaks core functionality)
