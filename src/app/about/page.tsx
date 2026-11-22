@@ -1,14 +1,11 @@
-
 import { Target, Eye, Heart, Users } from "lucide-react";
+import type { Metadata } from "next";
 
-const team = [
-  { name: "Aryan Mehta",  role: "Founder & CEO",        emoji: "👨‍💻" },
-  { name: "Priya Sharma", role: "Head of Design",        emoji: "🎨" },
-  { name: "Rahul Verma",  role: "Lead Developer",        emoji: "⚙️" },
-  { name: "Sneha Nair",   role: "Community Manager",     emoji: "🤝" },
-];
+export const metadata: Metadata = {
+  title: "About Us",
+  description: "Learn about CampusHub's mission to connect college students with events and opportunities.",
+};
 
-// Icon keys — rendered inside component, not at module level
 const valueData = [
   { iconKey: "target", title: "Mission", text: "Empower every student to discover opportunities and make lasting memories through campus events." },
   { iconKey: "eye",    title: "Vision",  text: "A fully connected campus ecosystem where no student misses out on what matters to them." },
@@ -30,50 +27,64 @@ export default function AboutPage() {
       {/* Hero */}
       <section
         className="section-padding"
-        style={{ background: "radial-gradient(ellipse 70% 50% at 50% 0%, #ede9fe, transparent)", textAlign: "center" }}
+        style={{
+          background: "radial-gradient(ellipse 70% 50% at 50% 0%, var(--hero-glow), transparent)",
+          textAlign: "center",
+        }}
       >
-        <div className="container" style={{ maxWidth: "700px" }}>
-          <p style={{ color: "#7c3aed", fontWeight: 600, marginBottom: "10px" }}>About Us</p>
+        <div className="container" style={{ maxWidth: "720px" }}>
+          <p style={{ color: "var(--primary)", fontWeight: 600, marginBottom: "10px" }}>About Us</p>
           <h1 className="section-heading">
             Built for <span className="gradient-text">Students</span>,<br />by Students
           </h1>
-          <p className="muted" style={{ fontSize: "17px" }}>
+          <p className="muted" style={{ fontSize: "17px", lineHeight: 1.7 }}>
             CampusHub was born from a simple idea: college life is rich with experiences —
-            hackathons, fests, workshops, sports — but students often miss them. We set out to change that.
+            hackathons, cultural fests, hands-on workshops, sports tournaments — but students often miss them. We set out to change that with a centralized, verified campus event platform.
           </p>
         </div>
       </section>
 
       {/* Values */}
-      <section className="section-padding" style={{ background: "#f3f4f6" }}>
+      <section
+        className="section-padding"
+        style={{
+          background: "var(--surface-alt)",
+          borderTop: "1px solid var(--border)",
+          borderBottom: "1px solid var(--border)",
+          transition: "background 0.25s, border-color 0.25s",
+        }}
+      >
         <div className="container">
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "22px" }}>
             {valueData.map((v, i) => (
-              <div key={i} style={{ background: "#ffffff", border: "1px solid #e5e7eb", borderRadius: "16px", padding: "30px 26px", boxShadow: "0 1px 3px #0000000a" }}>
-                <div style={{ display: "inline-flex", padding: "12px", borderRadius: "10px", background: "#ede9fe", color: "#7c3aed", marginBottom: "16px" }}>
+              <div
+                key={i}
+                style={{
+                  background: "var(--card-bg)",
+                  border: "1px solid var(--border)",
+                  borderRadius: "18px",
+                  padding: "32px 26px",
+                  boxShadow: "var(--card-shadow)",
+                }}
+              >
+                <div
+                  style={{
+                    display: "inline-flex",
+                    padding: "12px",
+                    borderRadius: "12px",
+                    background: "rgba(124, 58, 237, 0.12)",
+                    color: "var(--primary)",
+                    marginBottom: "16px",
+                  }}
+                >
                   <ValueIcon iconKey={v.iconKey} />
                 </div>
-                <h3 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "10px", color: "#111827" }}>{v.title}</h3>
-                <p className="muted" style={{ fontSize: "14px" }}>{v.text}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Team */}
-      <section className="section-padding">
-        <div className="container">
-          <div style={{ textAlign: "center", marginBottom: "48px" }}>
-            <h2 className="section-heading">Meet the <span className="gradient-text">Team</span></h2>
-            <p className="muted">The passionate people behind CampusHub.</p>
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "24px" }}>
-            {team.map((member, i) => (
-              <div key={i} className="event-card" style={{ padding: "36px 24px", textAlign: "center" }}>
-                <div style={{ fontSize: "52px", marginBottom: "16px" }}>{member.emoji}</div>
-                <h3 style={{ fontSize: "17px", fontWeight: 700, marginBottom: "6px", color: "#111827" }}>{member.name}</h3>
-                <p style={{ color: "#7c3aed", fontSize: "13px", fontWeight: 500 }}>{member.role}</p>
+                <h3 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "10px", color: "var(--text-primary)" }}>
+                  {v.title}
+                </h3>
+                <p className="muted" style={{ fontSize: "14px" }}>
+                  {v.text}
+                </p>
               </div>
             ))}
           </div>

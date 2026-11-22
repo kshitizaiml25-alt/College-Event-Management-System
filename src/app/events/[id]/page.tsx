@@ -1,4 +1,3 @@
-
 import { events } from "@/data/events";
 import { Calendar, MapPin, Tag, ArrowLeft, Users, Clock, Building2 } from "lucide-react";
 import Link from "next/link";
@@ -21,11 +20,11 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   };
 }
 
-const categoryBadge: Record<string, React.CSSProperties> = {
-  Technical: { background: "#ede9fe", color: "#5b21b6", border: "1px solid #c4b5fd" },
-  Cultural:  { background: "#fce7f3", color: "#9d174d", border: "1px solid #fbcfe8" },
-  Workshop:  { background: "#fef9c3", color: "#854d0e", border: "1px solid #fde68a" },
-  Sports:    { background: "#dcfce7", color: "#15803d", border: "1px solid #bbf7d0" },
+const categoryStyles: Record<string, { bg: string; color: string; border: string }> = {
+  Technical: { bg: "rgba(124, 58, 237, 0.15)", color: "#8b5cf6", border: "rgba(124, 58, 237, 0.3)" },
+  Cultural:  { bg: "rgba(219, 39, 119, 0.15)", color: "#ec4899", border: "rgba(219, 39, 119, 0.3)" },
+  Workshop:  { bg: "rgba(217, 119, 6, 0.15)",  color: "#f59e0b", border: "rgba(217, 119, 6, 0.3)" },
+  Sports:    { bg: "rgba(22, 163, 74, 0.15)",  color: "#22c55e", border: "rgba(22, 163, 74, 0.3)" },
 };
 
 export default async function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -33,78 +32,164 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
   const event = events.find((e) => e.id === id);
   if (!event) notFound();
 
-  const badge = categoryBadge[event.category] ?? { background: "#ede9fe", color: "#5b21b6", border: "1px solid #c4b5fd" };
+  const badge = categoryStyles[event.category] ?? {
+    bg: "rgba(124, 58, 237, 0.15)",
+    color: "#8b5cf6",
+    border: "rgba(124, 58, 237, 0.3)",
+  };
   const seatsLeft = event.seats - event.registered;
   const pct = Math.round((event.registered / event.seats) * 100);
 
   return (
-    <section className="section-padding">
-      <div className="container" style={{ maxWidth: "860px" }}>
-        <Link href="/events" style={{ display: "inline-flex", alignItems: "center", gap: "8px", color: "#6b7280", fontSize: "14px", marginBottom: "28px" }}>
+    <section className="section-padding" style={{ minHeight: "calc(100vh - 72px)" }}>
+      <div className="container" style={{ maxWidth: "880px" }}>
+        <Link
+          href="/events"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "8px",
+            color: "var(--text-muted)",
+            fontSize: "14px",
+            marginBottom: "28px",
+            transition: "color 0.2s",
+          }}
+        >
           <ArrowLeft size={16} /> Back to Events
         </Link>
 
-        <img src={event.image} alt={event.title} style={{ width: "100%", height: "380px", objectFit: "cover", borderRadius: "18px", marginBottom: "32px", display: "block" }} />
+        <img
+          src={event.image}
+          alt={event.title}
+          style={{
+            width: "100%",
+            height: "380px",
+            objectFit: "cover",
+            borderRadius: "20px",
+            marginBottom: "32px",
+            display: "block",
+            boxShadow: "var(--card-shadow)",
+          }}
+        />
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: "32px", alignItems: "start" }}>
           <div>
-            <span style={{ display: "inline-flex", alignItems: "center", gap: "5px", padding: "5px 12px", borderRadius: "999px", fontSize: "12px", fontWeight: 600, marginBottom: "16px", ...badge }}>
+            <span
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "5px",
+                padding: "5px 14px",
+                borderRadius: "999px",
+                fontSize: "12px",
+                fontWeight: 600,
+                marginBottom: "16px",
+                background: badge.bg,
+                color: badge.color,
+                border: `1px solid ${badge.border}`,
+              }}
+            >
               <Tag size={11} /> {event.category}
             </span>
 
-            <h1 style={{ fontSize: "clamp(24px, 4vw, 38px)", fontWeight: 800, marginBottom: "14px", lineHeight: 1.2, color: "#111827" }}>
+            <h1
+              style={{
+                fontSize: "clamp(24px, 4vw, 38px)",
+                fontWeight: 800,
+                marginBottom: "14px",
+                lineHeight: 1.2,
+                color: "var(--text-primary)",
+              }}
+            >
               {event.title}
             </h1>
 
             {/* Event meta */}
             <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "24px" }}>
-              {[
-                { icon: <Calendar size={15} style={{ color: "#7c3aed", flexShrink: 0 }} />, text: event.date },
-                { icon: <Clock    size={15} style={{ color: "#7c3aed", flexShrink: 0 }} />, text: `Registration deadline: ${event.deadline}` },
-                { icon: <MapPin   size={15} style={{ color: "#7c3aed", flexShrink: 0 }} />, text: event.venue },
-                { icon: <Building2 size={15} style={{ color: "#7c3aed", flexShrink: 0 }} />, text: `Organized by: ${event.organizer}` },
-                { icon: <Users    size={15} style={{ color: "#7c3aed", flexShrink: 0 }} />, text: `${seatsLeft > 0 ? `${seatsLeft} seats remaining` : "Registration Full"} (${event.registered}/${event.seats})` },
-              ].map((item, i) => (
-                <span key={i} style={{ display: "flex", alignItems: "center", gap: "10px", color: "#6b7280", fontSize: "14px" }}>
-                  {item.icon} {item.text}
-                </span>
-              ))}
-            </div>
-
-            {/* Seat bar */}
-            <div style={{ marginBottom: "28px" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", color: "#9ca3af", marginBottom: "6px" }}>
-                <span>Seats filled</span>
-                <span>{pct}%</span>
-              </div>
-              <div style={{ background: "#e5e7eb", borderRadius: "999px", height: "7px", overflow: "hidden" }}>
-                <div style={{ height: "100%", borderRadius: "999px", width: `${pct}%`, background: pct >= 90 ? "#ef4444" : pct >= 70 ? "#f59e0b" : "#7c3aed", transition: "width 0.5s ease" }} />
-              </div>
+              <span style={{ display: "flex", alignItems: "center", gap: "9px", fontSize: "14px", color: "var(--text-secondary)" }}>
+                <Calendar size={16} style={{ color: "var(--primary)", flexShrink: 0 }} />
+                <strong>Date &amp; Time:</strong> {event.date}
+              </span>
+              <span style={{ display: "flex", alignItems: "center", gap: "9px", fontSize: "14px", color: "var(--text-secondary)" }}>
+                <MapPin size={16} style={{ color: "var(--primary)", flexShrink: 0 }} />
+                <strong>Venue:</strong> {event.venue}
+              </span>
+              <span style={{ display: "flex", alignItems: "center", gap: "9px", fontSize: "14px", color: "var(--text-secondary)" }}>
+                <Building2 size={16} style={{ color: "var(--primary)", flexShrink: 0 }} />
+                <strong>Organizer:</strong> {event.organizer}
+              </span>
+              <span style={{ display: "flex", alignItems: "center", gap: "9px", fontSize: "14px", color: "var(--text-secondary)" }}>
+                <Clock size={16} style={{ color: "var(--primary)", flexShrink: 0 }} />
+                <strong>Registration Deadline:</strong> {event.deadline}
+              </span>
             </div>
 
             {/* Description */}
-            <div style={{ background: "#f9fafb", borderRadius: "14px", padding: "24px", marginBottom: "32px", border: "1px solid #e5e7eb" }}>
-              <h2 style={{ fontSize: "16px", fontWeight: 700, color: "#111827", marginBottom: "10px" }}>About This Event</h2>
-              <p style={{ color: "#6b7280", fontSize: "15px", lineHeight: 1.8, margin: 0 }}>{event.detailedDescription}</p>
-            </div>
+            <h2 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "8px", color: "var(--text-primary)" }}>
+              About This Event
+            </h2>
+            <p className="muted" style={{ fontSize: "15px", lineHeight: 1.8, marginBottom: "20px" }}>
+              {event.detailedDescription || event.description}
+            </p>
 
             {/* Tags */}
-            {event.tags && (
-              <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "32px" }}>
+            {event.tags && event.tags.length > 0 && (
+              <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "28px" }}>
                 {event.tags.map((tag) => (
-                  <span key={tag} style={{ background: "#f3f4f6", color: "#6b7280", fontSize: "12px", fontWeight: 500, padding: "4px 10px", borderRadius: "999px", border: "1px solid #e5e7eb" }}>
+                  <span
+                    key={tag}
+                    style={{
+                      fontSize: "12px",
+                      padding: "4px 10px",
+                      borderRadius: "6px",
+                      background: "var(--surface-alt)",
+                      border: "1px solid var(--border)",
+                      color: "var(--text-secondary)",
+                    }}
+                  >
                     #{tag}
                   </span>
                 ))}
               </div>
             )}
+          </div>
 
-            <div style={{ display: "flex", gap: "14px", flexWrap: "wrap" }}>
-              <RegisterButton event={{ id: event.id, title: event.title, date: event.date, venue: event.venue, category: event.category, formUrl: event.formUrl, seats: event.seats, registered: event.registered }} />
-              <Link href="/events" style={{ display: "inline-flex", alignItems: "center", padding: "13px 22px", borderRadius: "10px", border: "1px solid #d1d5db", color: "#374151", fontWeight: 600, background: "#ffffff" }}>
-                Browse More Events
-              </Link>
+          {/* Registration Card */}
+          <div
+            style={{
+              background: "var(--surface)",
+              border: "1px solid var(--border)",
+              borderRadius: "18px",
+              padding: "26px",
+              minWidth: "270px",
+              boxShadow: "var(--card-shadow)",
+            }}
+          >
+            <div style={{ marginBottom: "16px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+                <span style={{ fontSize: "13px", color: "var(--text-muted)" }}>Seats Filled</span>
+                <span style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-primary)" }}>
+                  {event.registered} / {event.seats} ({pct}%)
+                </span>
+              </div>
+              <div style={{ height: "6px", background: "var(--border)", borderRadius: "999px", overflow: "hidden" }}>
+                <div
+                  style={{
+                    height: "100%",
+                    width: `${Math.min(pct, 100)}%`,
+                    background: pct >= 90 ? "#ef4444" : pct >= 70 ? "#f59e0b" : "var(--primary)",
+                    borderRadius: "999px",
+                    transition: "width 0.3s",
+                  }}
+                />
+              </div>
             </div>
+
+            <p style={{ fontSize: "12px", color: seatsLeft <= 10 ? "#ef4444" : "var(--text-muted)", marginBottom: "18px", fontWeight: seatsLeft <= 10 ? 600 : 400 }}>
+              {seatsLeft <= 0 ? "Event is fully booked." : `${seatsLeft} seats remaining.`}
+            </p>
+
+            <RegisterButton event={event} />
           </div>
         </div>
       </div>

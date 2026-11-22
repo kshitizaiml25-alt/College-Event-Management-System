@@ -1,63 +1,60 @@
-
 import type { Metadata } from "next";
 
-export const metadata: Metadata = { title: "Privacy Policy" };
+export const metadata: Metadata = {
+  title: "Privacy Policy",
+  description: "CampusHub Privacy Policy — how we protect and manage student data.",
+};
 
 export default function PrivacyPage() {
-  const sections = [
-    {
-      title: "1. Information We Collect",
-      body: `When you create an account or register for an event, we collect: your name, college email address, phone number, college name, and year of study. We also collect usage data such as pages visited and events viewed to improve our services.`,
-    },
-    {
-      title: "2. How We Use Your Information",
-      body: `We use your information to: manage your account, process event registrations, send confirmation notifications, improve our platform, and communicate important updates. We do not use your data for advertising.`,
-    },
-    {
-      title: "3. Data Sharing",
-      body: `We share your registration details (name, email, phone, college) with the event organizer for the specific events you register for. We do not sell, rent, or share your data with any third parties outside of this.`,
-    },
-    {
-      title: "4. Data Security",
-      body: `We use industry-standard HTTPS encryption for all data transmission. Passwords are hashed using bcrypt and never stored in plain text. We regularly review our security practices.`,
-    },
-    {
-      title: "5. Cookies",
-      body: `We use essential cookies to maintain your login session. We do not use advertising or tracking cookies. You can disable cookies in your browser settings, though some features may not work correctly.`,
-    },
-    {
-      title: "6. Your Rights",
-      body: `You may request access to, correction of, or deletion of your personal data at any time by emailing hello@campushub.in. We will respond within 7 business days.`,
-    },
-    {
-      title: "7. Data Retention",
-      body: `We retain your account data for as long as your account is active. Registration records are kept for 1 year after the event date. You may request deletion at any time.`,
-    },
-    {
-      title: "8. Changes to This Policy",
-      body: `We may update this Privacy Policy from time to time. We will notify you by email and display a notice on our platform at least 7 days before changes take effect.`,
-    },
-    {
-      title: "9. Contact Us",
-      body: `For privacy-related questions, email privacy@campushub.in or write to: CampusHub, Bengaluru, Karnataka, India.`,
-    },
-  ];
-
   return (
-    <section className="section-padding">
-      <div className="container" style={{ maxWidth: "760px" }}>
-        <p style={{ color: "#7c3aed", fontWeight: 600, marginBottom: "8px" }}>Legal</p>
-        <h1 className="section-heading">Privacy <span className="gradient-text">Policy</span></h1>
-        <p className="muted" style={{ marginBottom: "8px" }}>Last updated: November 23, 2026</p>
-        <p className="muted" style={{ marginBottom: "48px" }}>
-          CampusHub respects your privacy. This policy explains what data we collect, why, and how we protect it.
+    <section className="section-padding" style={{ minHeight: "calc(100vh - 72px)" }}>
+      <div className="container" style={{ maxWidth: "780px" }}>
+        <h1 className="section-heading" style={{ marginBottom: "8px" }}>
+          Privacy Policy
+        </h1>
+        <p className="muted" style={{ marginBottom: "36px", fontSize: "14px" }}>
+          Last updated: January 2026
         </p>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
-          {sections.map((s, i) => (
-            <div key={i} style={{ borderLeft: "3px solid #c4b5fd", paddingLeft: "20px" }}>
-              <h2 style={{ fontSize: "17px", fontWeight: 700, color: "#111827", marginBottom: "10px" }}>{s.title}</h2>
-              <p style={{ color: "#6b7280", fontSize: "15px", lineHeight: 1.75, margin: 0 }}>{s.body}</p>
+          {[
+            {
+              title: "1. Information We Collect",
+              text: "We collect information you provide directly to us when creating an account or registering for an event, including your full name, college email address, contact number, college name, and year of study.",
+            },
+            {
+              title: "2. How We Use Your Information",
+              text: "Your information is used solely to generate your event tickets and confirmation IDs, notify you of event updates or venue changes, verify eligibility at the venue desk, and maintain your account dashboard.",
+            },
+            {
+              title: "3. Information Sharing",
+              text: "We only share your registration details with the verified organizer of the specific event you registered for. We never sell, rent, or trade student data to third parties or marketing brokers.",
+            },
+            {
+              title: "4. Data Security",
+              text: "All passwords and session data are encrypted using standard security hashing. Only authorized student credentials can access protected dashboards.",
+            },
+            {
+              title: "5. Your Rights",
+              text: "You can request to view, export, or permanently delete your account and registration records at any time by contacting us at hello@campushub.in.",
+            },
+          ].map((sec, i) => (
+            <div
+              key={i}
+              style={{
+                background: "var(--surface)",
+                border: "1px solid var(--border)",
+                borderRadius: "16px",
+                padding: "24px 28px",
+                boxShadow: "var(--card-shadow)",
+              }}
+            >
+              <h2 style={{ fontSize: "17px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "10px" }}>
+                {sec.title}
+              </h2>
+              <p className="muted" style={{ fontSize: "14px", lineHeight: 1.7, margin: 0 }}>
+                {sec.text}
+              </p>
             </div>
           ))}
         </div>

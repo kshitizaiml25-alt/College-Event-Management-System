@@ -1,25 +1,24 @@
-
 import Link from "next/link";
 import { Calendar, MapPin, Tag, Users } from "lucide-react";
 import type { Event } from "@/data/events";
 
-const categoryStyles: Record<string, React.CSSProperties> = {
-  Technical: { background: "#ede9fe", color: "#5b21b6", border: "1px solid #c4b5fd" },
-  Cultural:  { background: "#fce7f3", color: "#9d174d", border: "1px solid #fbcfe8" },
-  Workshop:  { background: "#fef9c3", color: "#854d0e", border: "1px solid #fde68a" },
-  Sports:    { background: "#dcfce7", color: "#15803d", border: "1px solid #bbf7d0" },
+const categoryStyles: Record<string, { bg: string; color: string; border: string }> = {
+  Technical: { bg: "rgba(124, 58, 237, 0.12)", color: "#8b5cf6", border: "rgba(124, 58, 237, 0.3)" },
+  Cultural:  { bg: "rgba(219, 39, 119, 0.12)", color: "#ec4899", border: "rgba(219, 39, 119, 0.3)" },
+  Workshop:  { bg: "rgba(217, 119, 6, 0.12)",  color: "#f59e0b", border: "rgba(217, 119, 6, 0.3)" },
+  Sports:    { bg: "rgba(22, 163, 74, 0.12)",  color: "#22c55e", border: "rgba(22, 163, 74, 0.3)" },
 };
 
-const defaultBadge: React.CSSProperties = {
-  background: "#ede9fe", color: "#5b21b6", border: "1px solid #c4b5fd",
+const defaultBadge = {
+  bg: "rgba(124, 58, 237, 0.12)", color: "#8b5cf6", border: "rgba(124, 58, 237, 0.3)",
 };
 
 function getSeatsClass(seats: number, registered: number): string {
   const remaining = seats - registered;
   const pct = remaining / seats;
-  if (remaining <= 0)   return "full";
-  if (pct <= 0.1)       return "low";
-  if (pct <= 0.3)       return "mid";
+  if (remaining <= 0) return "full";
+  if (pct <= 0.1) return "low";
+  if (pct <= 0.3) return "mid";
   return "ok";
 }
 
@@ -31,10 +30,10 @@ function getSeatLabel(seats: number, registered: number): string {
 }
 
 export default function EventCard({ event }: { event: Event }) {
-  const badgeStyle = categoryStyles[event.category] ?? defaultBadge;
+  const badgeConfig = categoryStyles[event.category] ?? defaultBadge;
   const seatsClass = getSeatsClass(event.seats, event.registered);
-  const seatLabel  = getSeatLabel(event.seats, event.registered);
-  const isFull     = event.registered >= event.seats;
+  const seatLabel = getSeatLabel(event.seats, event.registered);
+  const isFull = event.registered >= event.seats;
 
   return (
     <div className="event-card">
@@ -45,22 +44,43 @@ export default function EventCard({ event }: { event: Event }) {
           className={`seats-badge ${seatsClass}`}
           style={{ position: "absolute", top: "12px", right: "12px" }}
         >
-          <Users size={10} /> {seatLabel}
+          <Users size={11} /> {seatLabel}
         </span>
       </div>
 
       <div style={{ padding: "20px" }}>
         {/* Category + deadline row */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
-          <span style={{ display: "inline-flex", alignItems: "center", gap: "5px", padding: "4px 10px", borderRadius: "999px", fontSize: "12px", fontWeight: 600, ...badgeStyle }}>
+          <span
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "5px",
+              padding: "4px 10px",
+              borderRadius: "999px",
+              fontSize: "12px",
+              fontWeight: 600,
+              background: badgeConfig.bg,
+              color: badgeConfig.color,
+              border: `1px solid ${badgeConfig.border}`,
+            }}
+          >
             <Tag size={10} /> {event.category}
           </span>
-          <span style={{ fontSize: "11px", color: "#9ca3af" }}>
+          <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>
             Deadline: {event.deadline}
           </span>
         </div>
 
-        <h3 style={{ fontSize: "16px", fontWeight: 700, margin: "0 0 6px", lineHeight: 1.3, color: "#111827" }}>
+        <h3
+          style={{
+            fontSize: "16px",
+            fontWeight: 700,
+            margin: "0 0 6px",
+            lineHeight: 1.3,
+            color: "var(--text-primary)",
+          }}
+        >
           {event.title}
         </h3>
 
@@ -69,11 +89,11 @@ export default function EventCard({ event }: { event: Event }) {
         </p>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginBottom: "16px" }}>
-          <span style={{ display: "flex", alignItems: "center", gap: "7px", fontSize: "13px", color: "#6b7280" }}>
-            <Calendar size={13} style={{ color: "#7c3aed", flexShrink: 0 }} /> {event.date}
+          <span style={{ display: "flex", alignItems: "center", gap: "7px", fontSize: "13px", color: "var(--text-secondary)" }}>
+            <Calendar size={13} style={{ color: "var(--primary)", flexShrink: 0 }} /> {event.date}
           </span>
-          <span style={{ display: "flex", alignItems: "center", gap: "7px", fontSize: "13px", color: "#6b7280" }}>
-            <MapPin size={13} style={{ color: "#7c3aed", flexShrink: 0 }} /> {event.venue}
+          <span style={{ display: "flex", alignItems: "center", gap: "7px", fontSize: "13px", color: "var(--text-secondary)" }}>
+            <MapPin size={13} style={{ color: "var(--primary)", flexShrink: 0 }} /> {event.venue}
           </span>
         </div>
 
@@ -81,9 +101,12 @@ export default function EventCard({ event }: { event: Event }) {
           href={`/events/${event.id}`}
           className="primary-btn"
           style={{
-            width: "100%", fontSize: "13px", padding: "10px 16px",
+            width: "100%",
+            fontSize: "13px",
+            padding: "10px 16px",
             opacity: isFull ? 0.6 : 1,
             pointerEvents: isFull ? "none" : "auto",
+            textAlign: "center",
           }}
         >
           {isFull ? "Registration Full" : "View Details →"}

@@ -1,11 +1,53 @@
-
 @import "tailwindcss";
 
 :root {
   --background: #f9fafb;
   --surface: #ffffff;
+  --surface-alt: #f3f4f6;
+  --surface-elevated: #ffffff;
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-muted: #6b7280;
+  --border: #e5e7eb;
+  --border-subtle: #d1d5db;
+  --input-bg: #f3f4f6;
+  --input-border: #d1d5db;
+  --card-bg: #ffffff;
+  --nav-bg: rgba(255, 255, 255, 0.95);
+  --dropdown-bg: #ffffff;
+  --modal-bg: #ffffff;
+  --hero-glow: #ede9fe;
+  --hero-tag-bg: #ede9fe;
+  --hero-tag-border: #c4b5fd;
+  --hero-tag-text: #6d28d9;
   --primary: #7c3aed;
-  --muted: #6b7280;
+  --primary-hover: #6d28d9;
+  --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"], .dark {
+  --background: #0b0f19;
+  --surface: #111827;
+  --surface-alt: #162032;
+  --surface-elevated: #1a243a;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --border: #1f2d45;
+  --border-subtle: #2d3e5e;
+  --input-bg: #141d30;
+  --input-border: #283955;
+  --card-bg: #111827;
+  --nav-bg: rgba(11, 15, 25, 0.95);
+  --dropdown-bg: #162032;
+  --modal-bg: #111827;
+  --hero-glow: rgba(124, 58, 237, 0.18);
+  --hero-tag-bg: #2e1065;
+  --hero-tag-border: #5b21b6;
+  --hero-tag-text: #c4b5fd;
+  --primary: #8b5cf6;
+  --primary-hover: #7c3aed;
+  --card-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
 }
 
 * {
@@ -16,8 +58,9 @@
 body {
   margin: 0;
   background: var(--background);
-  color: #111827;
+  color: var(--text-primary);
   font-family: Arial, Helvetica, sans-serif;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 a {
@@ -35,7 +78,7 @@ button {
 }
 
 .gradient-text {
-  background: linear-gradient(90deg, #7c3aed, #db2777);
+  background: linear-gradient(90deg, #8b5cf6, #ec4899);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -46,55 +89,62 @@ button {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 13px 22px;
+  padding: 12px 22px;
   border-radius: 10px;
   background: linear-gradient(120deg, #7c3aed, #5b21b6);
-  color: white;
+  color: #ffffff !important;
   font-weight: 600;
   transition: 0.25s;
   border: none;
+  text-decoration: none;
 }
 
 .primary-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 30px #7c3aed44;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(124, 58, 237, 0.35);
 }
 
-/* Outline / secondary button */
+/* Secondary / Outline button */
 .outline-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 13px 22px;
+  padding: 12px 22px;
   border-radius: 10px;
-  border: 1px solid #d1d5db;
-  color: #374151;
-  background: #ffffff;
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  background: var(--surface);
   font-weight: 600;
   transition: 0.25s;
+  text-decoration: none;
 }
 
 .outline-btn:hover {
-  border-color: #7c3aed;
-  color: #7c3aed;
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--surface-alt);
 }
 
 /* Footer links */
 .footer-link {
-  color: #6b7280;
+  color: var(--text-muted);
   font-size: 14px;
   transition: color 0.2s;
 }
-.footer-link:hover { color: #7c3aed; }
+.footer-link:hover {
+  color: var(--primary);
+}
 
 /* Footer social icons */
 .footer-icon {
-  color: #6b7280;
+  color: var(--text-muted);
   cursor: pointer;
   transition: color 0.2s;
 }
-.footer-icon:hover { color: #7c3aed; }
+.footer-icon:hover {
+  color: var(--primary);
+}
 
 .section-padding {
   padding: 85px 0;
@@ -102,12 +152,13 @@ button {
 
 .section-heading {
   font-size: clamp(28px, 4vw, 42px);
-  font-weight: 750;
+  font-weight: 800;
   margin-bottom: 12px;
+  color: var(--text-primary);
 }
 
 .muted {
-  color: var(--muted);
+  color: var(--text-muted);
   line-height: 1.7;
 }
 
@@ -119,17 +170,17 @@ button {
 
 .event-card {
   overflow: hidden;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
   border-radius: 17px;
-  transition: 0.3s;
-  box-shadow: 0 1px 3px #0000000a;
+  transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+  box-shadow: var(--card-shadow);
 }
 
 .event-card:hover {
-  transform: translateY(-6px);
-  border-color: #7c3aed;
-  box-shadow: 0 10px 30px #7c3aed18;
+  transform: translateY(-5px);
+  border-color: var(--primary);
+  box-shadow: 0 12px 36px rgba(124, 58, 237, 0.2);
 }
 
 .event-image {
@@ -141,18 +192,24 @@ button {
 
 .input-field {
   width: 100%;
-  background: #f3f4f6;
-  border: 1px solid #d1d5db;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
   border-radius: 10px;
-  padding: 13px;
-  color: #111827;
+  padding: 12px 14px;
+  color: var(--text-primary);
   outline: none;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, background-color 0.2s;
+  font-size: 14px;
 }
 
 .input-field:focus {
-  border-color: #7c3aed;
-  background: #ffffff;
+  border-color: var(--primary);
+  background: var(--surface);
+}
+
+.input-field::placeholder {
+  color: var(--text-muted);
+  opacity: 0.8;
 }
 
 @keyframes spin {
@@ -161,7 +218,7 @@ button {
 
 @keyframes modalIn {
   from { opacity: 0; transform: scale(0.95) translateY(10px); }
-  to   { opacity: 1; transform: scale(1)    translateY(0); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
 }
 
 @keyframes toastIn {
@@ -170,14 +227,26 @@ button {
 }
 
 /* Active nav link */
-.nav-link-active { color: #7c3aed !important; font-weight: 600 !important; }
+.nav-link-active {
+  color: var(--primary) !important;
+  font-weight: 600 !important;
+}
 
 /* Seat availability badges */
-.seats-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 999px; }
-.seats-badge.low  { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
-.seats-badge.mid  { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
-.seats-badge.ok   { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
-.seats-badge.full { background: #f3f4f6; color: #6b7280; border: 1px solid #e5e7eb; }
+.seats-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 999px;
+  backdrop-filter: blur(8px);
+}
+.seats-badge.low  { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+.seats-badge.mid  { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
+.seats-badge.ok   { background: rgba(34, 197, 94, 0.15);  color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.3); }
+.seats-badge.full { background: rgba(107, 114, 128, 0.2); color: #9ca3af; border: 1px solid rgba(107, 114, 128, 0.3); }
 
 @media (max-width: 800px) {
   .event-grid {

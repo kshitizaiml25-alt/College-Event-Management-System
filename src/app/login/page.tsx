@@ -1,16 +1,21 @@
-
 "use client";
 
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { CalendarDays, Eye, EyeOff } from "lucide-react";
-import { saveUser, getUser } from "@/lib/auth";
+import { CalendarDays, Eye, EyeOff, Lock, Mail, AlertCircle, Sparkles } from "lucide-react";
+import { authenticateUser } from "@/lib/auth";
+import { useToast } from "@/context/ToastContext";
 
-interface FormErrors { email?: string; password?: string; }
+interface FormErrors {
+  email?: string;
+  password?: string;
+  general?: string;
+}
 
 export default function LoginPage() {
   const router = useRouter();
+  const { showToast } = useToast();
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({ email: "", password: "" });
@@ -18,79 +23,300 @@ export default function LoginPage() {
 
   function validate(): FormErrors {
     const e: FormErrors = {};
-    if (!form.email.trim()) { e.email = "Email is required."; }
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) { e.email = "Enter a valid email address."; }
-    if (!form.password) e.password = "Password is required.";
+    if (!form.email.trim()) {
+      e.email = "Email is required.";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+      e.email = "Enter a valid email address.";
+    }
+    if (!form.password) {
+      e.password = "Password is required.";
+    }
     return e;
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const errs = validate();
-    if (Object.keys(errs).length > 0) { setErrors(errs); return; }
+    if (Object.keys(errs).length > 0) {
+      setErrors(errs);
+      return;
+    }
     setErrors({});
     setLoading(true);
-    await new Promise((res) => setTimeout(res, 1500));
-    const existing = getUser();
-    if (!existing || existing.email !== form.email) {
-      const namePart = form.email.split("@")[0].replace(/[._]/g, " ");
-      const parts = namePart.split(" ");
-      const firstName = parts[0].charAt(0).toUpperCase() + parts[0].slice(1);
-      const lastName = parts[1] ? parts[1].charAt(0).toUpperCase() + parts[1].slice(1) : "·";
-      saveUser({ firstName, lastName, email: form.email });
+
+    // Simulate standard network delay
+    await new Promise((res) => setTimeout(res, 600));
+
+    // STRICT AUTHENTICATION CHECK
+    const result = authenticateUser(form.email, form.password);
+
+    if (!result.success) {
+      setLoading(false);
+      const msg = result.error || "Authentication failed.";
+
+      if (msg.toLowerCase().includes("email") || msg.toLowerCase().includes("account")) {
+        setErrors({ email: msg });
+      } else if (msg.toLowerCase().includes("password")) {
+        setErrors({ password: msg });
+      } else {
+        setErrors({ general: msg });
+      }
+
+      showToast(msg, "error");
+      return;
     }
-    window.dispatchEvent(new Event("campushub:auth"));
+
+    showToast(`Welcome back, ${result.user?.firstName}!`, "success");
     setLoading(false);
-    router.push("/");
+    router.push("/dashboard");
   }
 
   function field(key: keyof typeof form, value: string) {
     setForm((p) => ({ ...p, [key]: value }));
-    setErrors((p) => ({ ...p, [key]: undefined }));
+    setErrors((p) => ({ ...p, [key]: undefined, general: undefined }));
+  }
+
+  function fillDemo(email: string, pass: string) {
+    setForm({ email, password: pass });
+    setErrors({});
   }
 
   return (
-    <section style={{ minHeight: "calc(100vh - 76px)", display: "flex", alignItems: "center", background: "#f3f4f6" }} className="section-padding">
+    <section
+      style={{
+        minHeight: "calc(100vh - 76px)",
+        display: "flex",
+        alignItems: "center",
+        background: "var(--background)",
+        transition: "background 0.25s",
+      }}
+      className="section-padding"
+    >
       <div className="container" style={{ maxWidth: "460px" }}>
         {/* Logo */}
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "32px", justifyContent: "center" }}>
-          <span style={{ background: "#7c3aed", borderRadius: "10px", padding: "8px", display: "inline-flex" }}><CalendarDays size={22} color="white" /></span>
-          <span style={{ fontSize: "22px", fontWeight: 800, color: "#111827" }}>Campus<span style={{ color: "#7c3aed" }}>Hub</span></span>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "28px", justifyContent: "center" }}>
+          <span
+            style={{
+              background: "linear-gradient(135deg, #7c3aed, #db2777)",
+              borderRadius: "10px",
+              padding: "8px",
+              display: "inline-flex",
+            }}
+          >
+            <CalendarDays size={22} color="white" />
+          </span>
+          <span style={{ fontSize: "22px", fontWeight: 800, color: "var(--text-primary)" }}>
+            Campus<span style={{ color: "var(--primary)" }}>Hub</span>
+          </span>
         </div>
 
         {/* Card */}
-        <div style={{ background: "#ffffff", border: "1px solid #e5e7eb", borderRadius: "20px", padding: "36px", boxShadow: "0 4px 24px #0000000d" }}>
-          <h1 style={{ fontSize: "26px", fontWeight: 800, marginBottom: "6px", textAlign: "center", color: "#111827" }}>Welcome Back</h1>
-          <p className="muted" style={{ textAlign: "center", marginBottom: "28px", fontSize: "14px" }}>Sign in to your CampusHub account</p>
+        <div
+          style={{
+            background: "var(--surface)",
+            border: "1px solid var(--border)",
+            borderRadius: "20px",
+            padding: "36px",
+            boxShadow: "var(--card-shadow)",
+            transition: "background 0.25s, border-color 0.25s",
+          }}
+        >
+          <h1
+            style={{
+              fontSize: "26px",
+              fontWeight: 800,
+              marginBottom: "6px",
+              textAlign: "center",
+              color: "var(--text-primary)",
+            }}
+          >
+            Welcome Back
+          </h1>
+          <p className="muted" style={{ textAlign: "center", marginBottom: "24px", fontSize: "14px" }}>
+            Sign in to your CampusHub account
+          </p>
+
+          {errors.general && (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                padding: "10px 14px",
+                background: "rgba(239, 68, 68, 0.1)",
+                border: "1px solid rgba(239, 68, 68, 0.3)",
+                borderRadius: "10px",
+                color: "#ef4444",
+                fontSize: "13px",
+                marginBottom: "16px",
+              }}
+            >
+              <AlertCircle size={16} style={{ flexShrink: 0 }} />
+              <span>{errors.general}</span>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} noValidate style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
             <div>
-              <label style={ls}>Email Address</label>
-              <input className="input-field" type="email" placeholder="you@college.edu" value={form.email} onChange={(e) => field("email", e.target.value)} style={errors.email ? eb : {}} />
-              {errors.email && <p style={et}>{errors.email}</p>}
+              <label style={labelStyle}>Email Address</label>
+              <div style={{ position: "relative" }}>
+                <input
+                  className="input-field"
+                  type="email"
+                  placeholder="you@college.edu"
+                  value={form.email}
+                  onChange={(e) => field("email", e.target.value)}
+                  style={{
+                    paddingLeft: "38px",
+                    ...(errors.email ? errorBorder : {}),
+                  }}
+                />
+                <Mail
+                  size={16}
+                  style={{
+                    position: "absolute",
+                    left: "12px",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    color: "var(--text-muted)",
+                  }}
+                />
+              </div>
+              {errors.email && <p style={errorText}>{errors.email}</p>}
             </div>
 
             <div>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
-                <label style={{ fontSize: "13px", color: "#6b7280" }}>Password</label>
-                <Link href="#" style={{ fontSize: "13px", color: "#7c3aed" }}>Forgot password?</Link>
+                <label style={labelStyle}>Password</label>
+                <Link
+                  href="/faq"
+                  style={{ fontSize: "12px", color: "var(--primary)", fontWeight: 500 }}
+                >
+                  Forgot password?
+                </Link>
               </div>
               <div style={{ position: "relative" }}>
-                <input className="input-field" type={show ? "text" : "password"} placeholder="••••••••" value={form.password} onChange={(e) => field("password", e.target.value)} style={{ paddingRight: "44px", ...(errors.password ? eb : {}) }} />
-                <button type="button" onClick={() => setShow(!show)} style={{ position: "absolute", right: "13px", top: "50%", transform: "translateY(-50%)", background: "none", border: "none", color: "#9ca3af", padding: 0 }}>
-                  {show ? <EyeOff size={17} /> : <Eye size={17} />}
+                <input
+                  className="input-field"
+                  type={show ? "text" : "password"}
+                  placeholder="••••••••"
+                  value={form.password}
+                  onChange={(e) => field("password", e.target.value)}
+                  style={{
+                    paddingLeft: "38px",
+                    paddingRight: "44px",
+                    ...(errors.password ? errorBorder : {}),
+                  }}
+                />
+                <Lock
+                  size={16}
+                  style={{
+                    position: "absolute",
+                    left: "12px",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    color: "var(--text-muted)",
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShow(!show)}
+                  aria-label={show ? "Hide password" : "Show password"}
+                  style={{
+                    position: "absolute",
+                    right: "12px",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    background: "none",
+                    border: "none",
+                    color: "var(--text-muted)",
+                    padding: 0,
+                    cursor: "pointer",
+                  }}
+                >
+                  {show ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
-              {errors.password && <p style={et}>{errors.password}</p>}
+              {errors.password && <p style={errorText}>{errors.password}</p>}
             </div>
 
-            <button type="submit" className="primary-btn" disabled={loading} style={{ marginTop: "8px", width: "100%", opacity: loading ? 0.75 : 1, cursor: loading ? "not-allowed" : "pointer" }}>
-              {loading ? <><span style={sp} /> Signing In…</> : "Sign In"}
+            <button
+              type="submit"
+              className="primary-btn"
+              disabled={loading}
+              style={{
+                marginTop: "8px",
+                width: "100%",
+                opacity: loading ? 0.75 : 1,
+                cursor: loading ? "not-allowed" : "pointer",
+              }}
+            >
+              {loading ? (
+                <>
+                  <span style={spinner} /> Signing In…
+                </>
+              ) : (
+                "Sign In"
+              )}
             </button>
           </form>
 
-          <p style={{ textAlign: "center", marginTop: "24px", fontSize: "14px", color: "#6b7280" }}>
-            Don&apos;t have an account?{" "}<Link href="/signup" style={{ color: "#7c3aed", fontWeight: 600 }}>Sign up free</Link>
+          {/* Quick Demo Credentials */}
+          <div
+            style={{
+              marginTop: "22px",
+              padding: "12px 14px",
+              background: "var(--surface-alt)",
+              borderRadius: "12px",
+              border: "1px dashed var(--border)",
+              fontSize: "12px",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "6px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "6px" }}>
+              <Sparkles size={13} style={{ color: "var(--primary)" }} />
+              Quick Demo Accounts
+            </div>
+            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+              <button
+                type="button"
+                onClick={() => fillDemo("student@college.edu", "password123")}
+                style={{
+                  background: "var(--surface)",
+                  border: "1px solid var(--border)",
+                  borderRadius: "6px",
+                  padding: "4px 8px",
+                  fontSize: "11px",
+                  color: "var(--primary)",
+                  cursor: "pointer",
+                  fontWeight: 600,
+                }}
+              >
+                Use Student Demo
+              </button>
+              <button
+                type="button"
+                onClick={() => fillDemo("organizer@college.edu", "organizer123")}
+                style={{
+                  background: "var(--surface)",
+                  border: "1px solid var(--border)",
+                  borderRadius: "6px",
+                  padding: "4px 8px",
+                  fontSize: "11px",
+                  color: "var(--primary)",
+                  cursor: "pointer",
+                  fontWeight: 600,
+                }}
+              >
+                Use Organizer Demo
+              </button>
+            </div>
+          </div>
+
+          <p style={{ textAlign: "center", marginTop: "24px", fontSize: "14px", color: "var(--text-muted)" }}>
+            Don&apos;t have an account?{" "}
+            <Link href="/signup" style={{ color: "var(--primary)", fontWeight: 600 }}>
+              Sign up free
+            </Link>
           </p>
         </div>
       </div>
@@ -98,7 +324,30 @@ export default function LoginPage() {
   );
 }
 
-const ls: React.CSSProperties = { fontSize: "13px", color: "#6b7280", marginBottom: "8px", display: "block" };
-const eb: React.CSSProperties = { borderColor: "#ef4444" };
-const et: React.CSSProperties = { color: "#ef4444", fontSize: "12px", marginTop: "5px" };
-const sp: React.CSSProperties = { display: "inline-block", width: "14px", height: "14px", border: "2px solid #ffffff55", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.7s linear infinite" };
+const labelStyle: React.CSSProperties = {
+  fontSize: "13px",
+  color: "var(--text-secondary)",
+  marginBottom: "8px",
+  display: "block",
+  fontWeight: 500,
+};
+
+const errorBorder: React.CSSProperties = {
+  borderColor: "#ef4444",
+};
+
+const errorText: React.CSSProperties = {
+  color: "#ef4444",
+  fontSize: "12px",
+  marginTop: "5px",
+};
+
+const spinner: React.CSSProperties = {
+  display: "inline-block",
+  width: "14px",
+  height: "14px",
+  border: "2px solid rgba(255, 255, 255, 0.4)",
+  borderTopColor: "#fff",
+  borderRadius: "50%",
+  animation: "spin 0.7s linear infinite",
+};

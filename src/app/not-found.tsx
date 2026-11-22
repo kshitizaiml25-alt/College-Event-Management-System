@@ -1,4 +1,3 @@
-
 import Link from "next/link";
 import { Home, CalendarDays } from "lucide-react";
 
@@ -6,13 +5,29 @@ export default function NotFound() {
   return (
     <section
       className="section-padding"
-      style={{ minHeight: "calc(100vh - 72px)", display: "flex", alignItems: "center", textAlign: "center", background: "radial-gradient(ellipse 60% 40% at 50% 0%, #ede9fe, transparent)" }}
+      style={{
+        minHeight: "calc(100vh - 72px)",
+        display: "flex",
+        alignItems: "center",
+        textAlign: "center",
+        background: "radial-gradient(ellipse 60% 40% at 50% 0%, var(--hero-glow), transparent)",
+      }}
     >
       <div className="container" style={{ maxWidth: "520px" }}>
-        <div style={{ fontSize: "96px", fontWeight: 900, background: "linear-gradient(90deg,#7c3aed,#db2777)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", lineHeight: 1, marginBottom: "16px" }}>
+        <div
+          style={{
+            fontSize: "96px",
+            fontWeight: 900,
+            background: "linear-gradient(90deg, #8b5cf6, #ec4899)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            lineHeight: 1,
+            marginBottom: "16px",
+          }}
+        >
           404
         </div>
-        <h1 style={{ fontSize: "26px", fontWeight: 800, marginBottom: "12px", color: "#111827" }}>
+        <h1 style={{ fontSize: "26px", fontWeight: 800, marginBottom: "12px", color: "var(--text-primary)" }}>
           Page Not Found
         </h1>
         <p className="muted" style={{ marginBottom: "36px", fontSize: "16px" }}>
