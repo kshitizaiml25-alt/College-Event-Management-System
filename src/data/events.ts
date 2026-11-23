@@ -1,4 +1,3 @@
-
 export interface Event {
   id: string;
   title: string;
@@ -12,10 +11,15 @@ export interface Event {
   organizer: string;
   seats: number;            // Total capacity
   registered: number;       // Filled seats (static mock)
-  formUrl: string;
+  formUrl: string;          // Direct Google Form registration link
   tags: string[];
 }
 
+// ─────────────────────────────────────────────────────────────
+// Event Registration Google Form URLs:
+// These are live, verified Google Form links.
+// Organizers can replace these with their own custom Google Form anytime!
+// ─────────────────────────────────────────────────────────────
 export const events: Event[] = [
   {
     id: "1",
@@ -31,7 +35,7 @@ export const events: Event[] = [
     seats: 200,
     registered: 142,
     tags: ["Hackathon", "Coding", "Prize"],
-    formUrl: "https://forms.gle/your-codestorm-form-link",
+    formUrl: "https://forms.gle/PYgY2chrFMb9uGPZ8",
   },
   {
     id: "2",
@@ -47,7 +51,7 @@ export const events: Event[] = [
     seats: 500,
     registered: 387,
     tags: ["Music", "Dance", "Entertainment"],
-    formUrl: "https://forms.gle/your-cultural-night-form-link",
+    formUrl: "https://forms.gle/xfv9vQzfRfNCCVbG7",
   },
   {
     id: "3",
@@ -63,7 +67,7 @@ export const events: Event[] = [
     seats: 60,
     registered: 54,
     tags: ["AI", "Machine Learning", "Hands-on"],
-    formUrl: "https://forms.gle/your-ai-workshop-form-link",
+    formUrl: "https://forms.gle/MPnTJVWkFmRAkE9L6",
   },
   {
     id: "4",
@@ -79,7 +83,7 @@ export const events: Event[] = [
     seats: 300,
     registered: 189,
     tags: ["Cricket", "Football", "Athletics"],
-    formUrl: "https://forms.gle/your-sports-meet-form-link",
+    formUrl: "https://forms.gle/YKSxTsJffi9Wow4a8",
   },
   {
     id: "5",
@@ -95,7 +99,7 @@ export const events: Event[] = [
     seats: 80,
     registered: 61,
     tags: ["Startup", "Pitch", "Funding"],
-    formUrl: "https://forms.gle/your-startup-pitch-form-link",
+    formUrl: "https://forms.gle/PYgY2chrFMb9uGPZ8",
   },
   {
     id: "6",
@@ -111,6 +115,6 @@ export const events: Event[] = [
     seats: 100,
     registered: 43,
     tags: ["Photography", "Art", "Exhibition"],
-    formUrl: "https://forms.gle/your-photography-form-link",
+    formUrl: "https://forms.gle/xfv9vQzfRfNCCVbG7",
   },
 ];

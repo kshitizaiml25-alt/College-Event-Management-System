@@ -100,8 +100,8 @@ export default function Navbar() {
           </span>
         </Link>
 
-        {/* Desktop nav links */}
-        <div style={{ display: "flex", alignItems: "center", gap: "28px" }} className="hidden md:flex">
+        {/* Desktop nav links (hidden on mobile via CSS class) */}
+        <div className="nav-desktop-links">
           {links.map((link) => {
             const active = isActive(link.href);
             return (
@@ -123,9 +123,9 @@ export default function Navbar() {
           })}
         </div>
 
-        {/* Desktop right (Theme toggle + auth) */}
-        <div className="hidden md:flex" style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          {/* Theme switcher */}
+        {/* Desktop right (Theme toggle + auth) — hidden on mobile via CSS class */}
+        <div className="nav-desktop-actions">
+          {/* Exactly ONE theme toggle on desktop */}
           <ThemeToggle />
 
           {user ? (
@@ -275,8 +275,8 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* Mobile controls (Theme toggle + hamburger) */}
-        <div className="md:hidden" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        {/* Mobile controls (Theme toggle + hamburger) — ONLY visible on mobile screens <=768px */}
+        <div className="nav-mobile-actions">
           <ThemeToggle />
           <button
             onClick={() => setOpen(!open)}

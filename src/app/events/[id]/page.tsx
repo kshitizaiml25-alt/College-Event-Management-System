@@ -1,5 +1,5 @@
 import { events } from "@/data/events";
-import { Calendar, MapPin, Tag, ArrowLeft, Users, Clock, Building2 } from "lucide-react";
+import { Calendar, MapPin, Tag, ArrowLeft, Building2, Clock, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import RegisterButton from "@/components/RegisterButton";
@@ -154,14 +154,14 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
             )}
           </div>
 
-          {/* Registration Card */}
+          {/* Registration Card with Google Form banner */}
           <div
             style={{
               background: "var(--surface)",
               border: "1px solid var(--border)",
               borderRadius: "18px",
               padding: "26px",
-              minWidth: "270px",
+              minWidth: "290px",
               boxShadow: "var(--card-shadow)",
             }}
           >
@@ -188,6 +188,24 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
             <p style={{ fontSize: "12px", color: seatsLeft <= 10 ? "#ef4444" : "var(--text-muted)", marginBottom: "18px", fontWeight: seatsLeft <= 10 ? 600 : 400 }}>
               {seatsLeft <= 0 ? "Event is fully booked." : `${seatsLeft} seats remaining.`}
             </p>
+
+            {/* Direct Google Form Registration Note */}
+            <div
+              style={{
+                background: "var(--surface-alt)",
+                border: "1px solid var(--border)",
+                borderRadius: "12px",
+                padding: "14px",
+                marginBottom: "20px",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "6px", fontSize: "13px" }}>
+                <span>📝</span> Official Registration
+              </div>
+              <p style={{ margin: 0, color: "var(--text-muted)", fontSize: "12px", lineHeight: 1.5 }}>
+                Registrations are handled directly via Google Forms. Click the button below to register in a new tab.
+              </p>
+            </div>
 
             <RegisterButton event={event} />
           </div>

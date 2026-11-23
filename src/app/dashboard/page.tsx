@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { CalendarDays, Ticket, LogOut, ArrowRight, Clock, Building, User, Sparkles } from "lucide-react";
+import { CalendarDays, Ticket, LogOut, ArrowRight, Clock, Building, User, Sparkles, ExternalLink } from "lucide-react";
 import { getUser, logoutUser, type AuthUser } from "@/lib/auth";
 import { getRegistrations, type Registration } from "@/lib/registrations";
 import { events } from "@/data/events";
@@ -249,6 +249,24 @@ export default function DashboardPage() {
                     <div style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "4px" }}>
                       Registered on {new Date(reg.registeredAt).toLocaleDateString()}
                     </div>
+                    {events.find((e) => e.id === reg.eventId)?.formUrl && (
+                      <a
+                        href={events.find((e) => e.id === reg.eventId)?.formUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "4px",
+                          fontSize: "12px",
+                          color: "var(--primary)",
+                          fontWeight: 600,
+                          marginTop: "6px",
+                        }}
+                      >
+                        Google Form <ExternalLink size={11} />
+                      </a>
+                    )}
                   </div>
                 </div>
               ))}
