@@ -189,7 +189,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
               {seatsLeft <= 0 ? "Event is fully booked." : `${seatsLeft} seats remaining.`}
             </p>
 
-            {/* Direct Google Form Registration Note */}
+            {/* Registration note */}
             <div
               style={{
                 background: "var(--surface-alt)",
@@ -199,11 +199,11 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
                 marginBottom: "20px",
               }}
             >
-              <div style={{ display: "flex", alignItems: "center", gap: "8px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "6px", fontSize: "13px" }}>
-                <span>📝</span> Official Registration
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "4px", fontSize: "13px" }}>
+                <span>🎟</span> Official Registration
               </div>
               <p style={{ margin: 0, color: "var(--text-muted)", fontSize: "12px", lineHeight: 1.5 }}>
-                Registrations are handled directly via Google Forms. Click the button below to register in a new tab.
+                Click below to register for {event.title} and receive your entry ticket.
               </p>
             </div>
 
